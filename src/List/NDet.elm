@@ -53,18 +53,6 @@ toList nd = nd
 map : (a -> b) -> NDet a -> NDet b
 map f nd = List.map f nd
 
-{-| Useful for applying multiple functions to nondeterministic values:
-
-```
-toList
-  (map (+) (fromList [1,2,3])
-     `andMap` (fromList [1,2,3]))
-== [2,3,4,3,4,5,4,5,6]
-```
--}
-andMap : NDet (a -> b) -> NDet a -> NDet b
-andMap nf nd = List.andMap nf nd
-
 {-| Sequence some nondeterministic operations:
 
 ```
@@ -79,3 +67,15 @@ fromList [1,2,3] `andThen` \y -> (x,y)
 -}
 andThen : NDet a -> (a -> NDet b) -> NDet b
 andThen nd bind = List.concatMap bind nd
+
+{-| Useful for applying multiple functions to nondeterministic values:
+
+```
+toList
+  (map (+) (fromList [1,2,3])
+     `andMap` (fromList [1,2,3]))
+== [2,3,4,3,4,5,4,5,6]
+```
+-}
+andMap : NDet (a -> b) -> NDet a -> NDet b
+andMap nf nd = nf `andThen` (\f -> nd `andThen` (some << f))
