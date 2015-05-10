@@ -1,6 +1,7 @@
 module List.Extra
   ( minimumBy
   , maximumBy
+  , andMap
   , zip
   , zip3
   , zip4
