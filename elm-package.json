@@ -7,7 +7,8 @@
         "src"
     ],
     "exposed-modules": [
-        "List.Extra"
+        "List.Extra",
+        "List.NDet"
     ],
     "dependencies": {
         "elm-lang/core": "2.0.0 <= v < 3.0.0"
