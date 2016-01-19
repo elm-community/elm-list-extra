@@ -9,6 +9,7 @@ module List.Extra
   , takeWhile
   , dropWhile
   , dropDuplicates
+  , dropDuplicatesBy
   , replaceIf
   , singleton
   , removeWhen
@@ -166,12 +167,21 @@ dropWhile predicate list =
 {-| Drop _all_ duplicate elements from the list
 -}
 dropDuplicates : List comparable -> List comparable
-dropDuplicates list =
-  let
-    step next (set, acc) =
-      if Set.member next set
+dropDuplicates = dropDuplicatesBy identity
+
+
+{-| Drop all duplicate elements from the list, where
+    `f` is computed on each element to determine
+    the comparison value.
+-}
+dropDuplicatesBy : (a -> comparable) -> List a -> List a
+dropDuplicatesBy f list =
+  let step next (set, acc) =
+    let computedNext = f next
+    in
+      if Set.member computedNext set
         then (set, acc)
-        else (Set.insert next set, next::acc)
+        else (Set.insert computedNext set, next :: acc)
   in
     List.foldl step (Set.empty, []) list |> snd |> List.reverse
 
