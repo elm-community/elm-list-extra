@@ -8,8 +8,7 @@ module List.Extra
   , andMap, andThen
   , takeWhile
   , dropWhile
-  , dropDuplicates
-  , dropDuplicatesBy
+  , dropDuplicates, dropDuplicatesBy, dropFirstDuplicatesBy
   , replaceIf
   , singleton
   , removeWhen
@@ -164,18 +163,13 @@ dropWhile predicate list =
     x::xs   -> if (predicate x) then dropWhile predicate xs
                else list
 
-{-| Drop _all_ duplicate elements from the list
+{-| Drops duplicates from a list. It can be configured to either
+    keep only the first of the duplicates, or the last of the
+    duplicates. It can also be configured to run a function to
+    compute the duplicate value for comparison.
 -}
-dropDuplicates : List comparable -> List comparable
-dropDuplicates = dropDuplicatesBy identity
-
-
-{-| Drop all duplicate elements from the list, where
-    `f` is computed on each element to determine
-    the comparison value.
--}
-dropDuplicatesBy : (a -> comparable) -> List a -> List a
-dropDuplicatesBy f list =
+baseDropDuplicates : (List a -> List a) -> (List a -> List a) -> (a -> comparable) -> List a -> List a
+baseDropDuplicates pre post f list =
   let step next (set, acc) =
     let computedNext = f next
     in
@@ -183,7 +177,31 @@ dropDuplicatesBy f list =
         then (set, acc)
         else (Set.insert computedNext set, next :: acc)
   in
-    List.foldl step (Set.empty, []) list |> snd |> List.reverse
+    List.foldl step (Set.empty, []) (pre list) |> snd |> post
+
+
+{-| Drops all the duplicate elements in the list, but preserves the
+    first.
+-}
+dropDuplicates : List comparable -> List comparable
+dropDuplicates = dropDuplicatesBy identity
+
+
+{-| Drop all duplicate elements from the list, where
+    `f` is computed on each element to determine
+    the comparison value. Only the first is preserved.
+-}
+dropDuplicatesBy : (a -> comparable) -> List a -> List a
+dropDuplicatesBy = baseDropDuplicates identity List.reverse
+
+
+{-| Drop all duplicate elements from the list, where
+    `f` is computed on each element to determine
+    the comparison value. Only the last is preserved.
+-}
+dropFirstDuplicatesBy : (a -> comparable) -> List a -> List a
+dropFirstDuplicatesBy = baseDropDuplicates List.reverse identity
+
 
 {-| Map functions taking multiple arguments over multiple lists. Each list should be of the same length.
 
