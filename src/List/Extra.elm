@@ -15,6 +15,7 @@ module List.Extra
   , singleton
   , removeWhen
   , iterate
+  , range
   , intercalate, transpose, subsequences, permutations, interweave
   , foldl1, foldr1
   , scanl1, scanr, scanr1, unfoldr
@@ -43,7 +44,7 @@ module List.Extra
 @docs foldl1, foldr1
 
 # Building lists
-@docs scanl1, scanr, scanr1, unfoldr, iterate
+@docs scanl1, scanr, scanr1, unfoldr, iterate, range
 
 # Sublists
 @docs splitAt, takeWhileEnd, dropWhileEnd, span, break, stripPrefix, group, groupBy, groupByTransitive, inits, tails, select, selectSplit
@@ -119,6 +120,19 @@ iterate f x =
     Just x' -> x :: iterate f x'
     Nothing -> [x]
 
+{-| Returns an inclusive range defined by two integers. 
+
+    range -1 5 == [-1,0,1,2,3,4,5]
+    range 5 -1  == [5,4,3,2,1,0,-1]
+-}
+range : Int -> Int -> List (Int)
+range m n =
+  case (m < n) of                                                                                     
+    True ->
+      iterate (\num -> if num==n then Nothing else Just (num + 1) ) m                                 
+    False ->
+      iterate (\num -> if num==m then Nothing else Just (num + 1) ) n                                 
+        |> List.reverse
 
 {-| Decompose a list into its head and tail. If the list is empty, return `Nothing`. Otherwise, return `Just (x, xs)`, where `x` is head and `xs` is tail.
 
