@@ -98,7 +98,7 @@ getAt idx xs =
   else
     List.head <| List.drop idx xs
 
-{-| Alias for getAt
+{-| Alias for getAt, but with the parameters flipped.
 -}
 (!!) : List a -> Int -> Maybe a
 (!!) = flip getAt
