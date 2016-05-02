@@ -100,8 +100,8 @@ getAt idx xs =
 
 {-| Alias for getAt
 -}
-(!!) : Int -> List a -> Maybe a
-(!!) = getAt
+(!!) : List a -> Int -> Maybe a
+(!!) = flip getAt
 
 {-| Returns a list of repeated applications of `f`.
 
