@@ -91,8 +91,8 @@ init =
 {-| Returns `Just` the element at the given index in the list,
 or `Nothing` if the index is out of range.
 -}
-getAt : List a -> Int -> Maybe a
-getAt xs idx =
+getAt : Int -> List a -> Maybe a
+getAt idx xs =
   if idx < 0 then
     Nothing
   else
@@ -100,7 +100,7 @@ getAt xs idx =
 
 {-| Alias for getAt
 -}
-(!!) : List a -> Int -> Maybe a
+(!!) : Int -> List a -> Maybe a
 (!!) = getAt
 
 {-| Returns a list of repeated applications of `f`.
