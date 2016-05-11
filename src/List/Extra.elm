@@ -309,7 +309,7 @@ updateAt : Int -> (a -> a) -> List a -> List a
 updateAt i update list =
   updateIfIndex ((==) i) update list
 
-{-| Replace a value at a specific index by calling an update function.
+{-| Replace a value at an index that satisfies a predicate.
 -}
 updateIfIndex : (Int -> Bool) -> (a -> a) -> List a -> List a
 updateIfIndex predicate update list =
