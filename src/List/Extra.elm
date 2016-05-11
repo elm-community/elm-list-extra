@@ -18,7 +18,7 @@ module List.Extra exposing ( last
   , removeAt
   , removeWhen
   , iterate
-  , intercalate, transpose, subsequences, permutations, interweave, catMaybes
+  , intercalate, transpose, subsequences, permutations, interweave
   , foldl1, foldr1
   , scanl1, scanr, scanr1, unfoldr
   , splitAt, takeWhileEnd, dropWhileEnd, span, break, stripPrefix
@@ -40,7 +40,7 @@ module List.Extra exposing ( last
 @docs last, init, getAt, (!!), uncons, maximumBy, minimumBy, andMap, andThen, takeWhile, dropWhile, dropDuplicates, replaceIf, setAt, deleteIf, updateIf, updateAt, updateIfIndex, singleton, removeAt, removeWhen
 
 # List transformations
-@docs intercalate, transpose, subsequences, permutations, interweave, catMaybes
+@docs intercalate, transpose, subsequences, permutations, interweave
 
 # Folds
 @docs foldl1, foldr1
@@ -305,9 +305,12 @@ updateIf predicate update list =
 
 {-| Replace a value at a specific index by calling an update function.
 -}
-updateAt : Int -> (a -> a) -> List a -> List a
-updateAt i update list =
-  updateIfIndex ((==) i) update list
+updateAt : Int -> (a -> a) -> List a -> Maybe (List a)
+updateAt index update list =
+  if index < 0 || index >= List.length list then
+    Nothing
+  else
+    Just <| updateIfIndex ((==) index) update list
 
 {-| Replace a value at an index that satisfies a predicate.
 -}
@@ -338,20 +341,6 @@ setAt index value l =
 
         Just t ->
           Just (value :: t |> List.append head)
-
-
-{-| Concatenate a list of Maybes.
--}
-catMaybes : List (Maybe a) -> List a
-catMaybes maybes = 
-      let
-        toList maybe = 
-          case maybe of 
-            Nothing -> []
-            Just x -> [x]
-      in
-        List.concatMap toList maybes
-
 
 
 {-| Convert a value to a list containing one value.
