@@ -12,11 +12,13 @@ module List.Extra exposing ( last
   , setAt
   , deleteIf
   , updateIf
+  , updateAt
+  , updateIfIndex
   , singleton
   , removeAt
   , removeWhen
   , iterate
-  , intercalate, transpose, subsequences, permutations, interweave
+  , intercalate, transpose, subsequences, permutations, interweave, catMaybes
   , foldl1, foldr1
   , scanl1, scanr, scanr1, unfoldr
   , splitAt, takeWhileEnd, dropWhileEnd, span, break, stripPrefix
@@ -35,10 +37,10 @@ module List.Extra exposing ( last
 {-| Convenience functions for working with List
 
 # Basics
-@docs last, init, getAt, (!!), uncons, maximumBy, minimumBy, andMap, andThen, takeWhile, dropWhile, dropDuplicates, replaceIf, setAt, deleteIf, updateIf, singleton, removeAt, removeWhen
+@docs last, init, getAt, (!!), uncons, maximumBy, minimumBy, andMap, andThen, takeWhile, dropWhile, dropDuplicates, replaceIf, setAt, deleteIf, updateIf, updateAt, updateIfIndex, singleton, removeAt, removeWhen
 
 # List transformations
-@docs intercalate, transpose, subsequences, permutations, interweave
+@docs intercalate, transpose, subsequences, permutations, interweave, catMaybes
 
 # Folds
 @docs foldl1, foldr1
@@ -295,11 +297,23 @@ replaceIf : (a -> Bool) -> a -> List a -> List a
 replaceIf predicate replacement list =
   updateIf predicate (always replacement) list
 
-{-| Replace all values that satisfy a predicate by calling an update function
+{-| Replace all values that satisfy a predicate by calling an update function.
 -}
 updateIf : (a -> Bool) -> (a -> a) -> List a -> List a
 updateIf predicate update list =
   List.map (\item -> if predicate item then update item else item) list
+
+{-| Replace a value at a specific index by calling an update function.
+-}
+updateAt : Int -> (a -> a) -> List a -> List a
+updateAt i update list =
+  updateIfIndex ((==) i) update list
+
+{-| Replace a value at a specific index by calling an update function.
+-}
+updateIfIndex : (Int -> Bool) -> (a -> a) -> List a -> List a
+updateIfIndex predicate update list =
+  List.indexedMap (\i x -> if predicate i then update x else x) list
 
 {-| Remove all values that satisfy a predicate
 -}
@@ -324,6 +338,21 @@ setAt index value l =
 
         Just t ->
           Just (value :: t |> List.append head)
+
+
+{-| Concatenate a list of Maybes.
+-}
+catMaybes : List (Maybe a) -> List a
+catMaybes maybes = 
+      let
+        toList maybe = 
+          case maybe of 
+            Nothing -> []
+            Just x -> [x]
+      in
+        List.concatMap toList maybes
+
+
 
 {-| Convert a value to a list containing one value.
 
