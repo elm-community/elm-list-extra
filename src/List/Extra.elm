@@ -1,4 +1,4 @@
-module List.Extra
+module List.Extra exposing
   ( last
   , init
   , getAt, (!!)
@@ -28,7 +28,7 @@ module List.Extra
   , lift2
   , lift3
   , lift4
-  ) where
+  )
 {-| Convenience functions for working with List
 
 # Basics
